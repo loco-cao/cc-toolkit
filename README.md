@@ -18,7 +18,7 @@ npm install -g @lococao/ai-terminal
 
 ```bash
 # 注册一个 skill 仓库
-ait register gh:lococao/skill-adsense-lint
+ait register gh:loco-cao/skill-adsense-lint
 
 # 安装到你的 AI CLI
 ait install
