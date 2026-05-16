@@ -1,13 +1,21 @@
 {
-  "name": "ai-terminal",
+  "name": "@lococao/ai-terminal",
   "version": "0.1.0",
   "description": "AIT — AI Terminal. Universal CLI launcher for AI coding assistants with skill registry, PTY dashboard, and multi-platform support.",
   "main": "bin/ait.js",
   "bin": {
     "ait": "./bin/ait.js"
   },
+  "files": [
+    "bin/",
+    "lib/",
+    "assets/",
+    "docs/",
+    "README.md"
+  ],
   "scripts": {
-    "start": "node bin/ait.js"
+    "start": "node bin/ait.js",
+    "prepublishOnly": "node -e \"console.log('Publishing @lococao/ai-terminal@' + require('./package.json').version)\""
   },
   "keywords": [
     "ai",
@@ -20,6 +28,17 @@
   ],
   "author": "lococao",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lococao/ai-terminal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lococao/ai-terminal/issues"
+  },
+  "homepage": "https://github.com/lococao/ai-terminal#readme",
   "dependencies": {
     "commander": "^11.0.0",
     "@inquirer/prompts": "^4.0.0",
