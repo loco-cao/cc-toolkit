@@ -1,0 +1,11 @@
+node_modules/
+
+.adsense-lint/
+.ait/repos/
+.ait/registry.json
+
+*.log
+.env
+
+.DS_Store
+Thumbs.db

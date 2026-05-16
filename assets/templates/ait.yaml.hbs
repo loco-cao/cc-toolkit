@@ -1,0 +1,30 @@
+name: {{name}}
+version: 0.1.0
+description: >
+  {{description}}
+
+argument-hint: "{{argumentHint}}"
+
+targets:
+  claude:
+    trigger: /{{name}}
+    path: claude/SKILL.md
+  codex:
+    trigger: /{{name}}
+    path: codex/SKILL.md
+
+# Optional: custom interactive prompts
+# prompts:
+#   - name: mode
+#     type: select
+#     message: "Choose mode"
+#     options:
+#       - label: Remote
+#         value: "--remote"
+#       - label: Local
+#         value: "--local"
+
+output_dir: .adsense-lint
+report_pattern: "*/report.json"
+global_timeout: 600
+agent_timeout: 120
