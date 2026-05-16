@@ -163,11 +163,11 @@ program
       }
 
       // If skill produced a summary report, show its key data
-      if (summary.skillSummary) {
+      if (summary.skillReport) {
         console.log('');
         console.log(`  ${colorize('─'.repeat(50), ANSI.gray)}`);
         console.log(`  ${ANSI.bold}Skill report:${ANSI.reset}`);
-        for (const [key, val] of Object.entries(summary.skillSummary)) {
+        for (const [key, val] of Object.entries(summary.skillReport)) {
           const label = key.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
           if (typeof val === 'object' && val !== null) {
             console.log(`  ${ANSI.dim}${label}:${ANSI.reset} ${JSON.stringify(val)}`);
