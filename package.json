@@ -1,6 +1,6 @@
 {
   "name": "@lococao/ai-terminal",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "description": "AIT — AI Terminal. Universal CLI launcher for AI coding assistants with skill registry, PTY dashboard, and multi-platform support.",
   "main": "bin/ait.js",
   "bin": {
