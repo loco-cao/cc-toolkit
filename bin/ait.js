@@ -2,12 +2,10 @@
 
 const { program } = require('commander');
 const { colorize, ANSI } = require('../lib/colors.js');
-const { printBanner, selectPlatforms, selectSkill, askScope, askCli, askUrl, askConfirm } = require('../lib/prompts.js');
+const { selectPlatforms, selectSkill, askScope, askConfirm } = require('../lib/prompts.js');
 const { register, unregister, update, list, findSkill } = require('../lib/registry.js');
 const { installSkill, uninstallSkill } = require('../lib/installer.js');
 const { runSkill, openCli } = require('../lib/runner.js');
-const { detectAll } = require('../lib/adapters/index.js');
-const path = require('path');
 
 program
   .name('ait')
@@ -119,19 +117,11 @@ program
 // ── run ──
 
 program
-  .command('run [skill]')
-  .description('Run a skill with PTY dashboard')
+  .command('run <skill> [skillArgs...]')
+  .description('Run a skill with PTY dashboard. Extra args are forwarded to the skill.')
   .option('--cli <name>', 'Force a specific CLI (claude, codex, auto)')
-  .option('--local', 'Local project audit')
-  .option('--url <url>', 'Remote URL audit')
-  .option('--timeout <ms>', 'Global timeout in ms')
-  .action(async (skillPath, options) => {
-    if (!skillPath) {
-      console.log(colorize('\n  Usage: ait run skills/<name> [--local | --url <url>]', ANSI.bold));
-      console.log('');
-      return;
-    }
-
+  .allowUnknownOption()
+  .action(async (skillPath, skillArgs, options) => {
     // Normalize skill name
     let skillName = skillPath;
     if (skillPath.startsWith('skills/')) {
@@ -146,40 +136,45 @@ program
       return;
     }
 
-    // Build args
-    const args = [];
-    if (options.local) args.push('--local');
-    if (options.url) args.push(options.url);
+    // Args to forward to the skill — everything the user typed after the skill name
+    const args = skillArgs || [];
 
     console.log(`\n  ${colorize(reg.name, ANSI.bold)}  v${reg.version}  ${ANSI.dim}${reg.description || ''}${ANSI.reset}`);
+    if (args.length > 0) {
+      console.log(`  ${ANSI.dim}args: ${args.join(' ')}${ANSI.reset}`);
+    }
     console.log('');
 
     const summary = await runSkill(skillName, args, {
       cli: options.cli || 'auto',
       cwd: process.cwd(),
-      timeout: options.timeout ? parseInt(options.timeout) : undefined,
+      outputDir: reg.output_dir || null,
+      globalTimeout: reg.global_timeout || null,
     });
 
     if (summary) {
-      const gradeColor = summary.grade === '不合格' ? ANSI.brightRed
-        : summary.grade === '基本满足' ? ANSI.brightYellow
-        : summary.grade === '待提升' ? ANSI.brightCyan
-        : ANSI.brightGreen;
-      const riskColor = summary.risk.includes('HIGH') ? ANSI.brightRed : ANSI.yellow;
-
-      console.log(`\n  ${colorize('═'.repeat(62), ANSI.gray)}`);
-      console.log(`  ${ANSI.bold}Score:${ANSI.reset} ${colorize(String(summary.total).padStart(3), ANSI.bold)}  Grade: ${colorize(summary.grade, gradeColor)}  Risk: ${colorize(summary.risk, riskColor)}`);
-      if (summary.veto) {
-        console.log(`  ${colorize('! Policy veto — score <60 forces failing grade', ANSI.brightRed)}`);
-      }
-      console.log(`  ${colorize('═'.repeat(62), ANSI.gray)}`);
-      console.log(`  ${ANSI.dim}Agent         Score   Priority${ANSI.reset}`);
+      console.log(`\n  ${colorize('═'.repeat(50), ANSI.gray)}`);
+      const avg = summary.total;
+      console.log(`  ${ANSI.bold}Average score:${ANSI.reset} ${colorize(String(avg).padStart(3), ANSI.bold)}  (${summary.scores.length} agents)`);
+      console.log(`  ${colorize('═'.repeat(50), ANSI.gray)}`);
+      console.log(`  ${ANSI.dim}Agent          Score${ANSI.reset}`);
       for (const s of summary.scores) {
-        const pColor = s.priority === 'Critical' ? ANSI.brightRed
-          : s.priority === 'High' ? ANSI.brightYellow
-          : s.priority === 'Medium' ? ANSI.brightCyan
-          : ANSI.dim;
-        console.log(`  ${s.name.padEnd(12)} ${colorize(String(s.score).padStart(4), ANSI.bold)}  ${colorize(s.priority.padEnd(8), pColor)}`);
+        console.log(`  ${s.name.padEnd(14)} ${colorize(String(s.score).padStart(4), ANSI.bold)}`);
+      }
+
+      // If skill produced a summary report, show its key data
+      if (summary.skillSummary) {
+        console.log('');
+        console.log(`  ${colorize('─'.repeat(50), ANSI.gray)}`);
+        console.log(`  ${ANSI.bold}Skill report:${ANSI.reset}`);
+        for (const [key, val] of Object.entries(summary.skillSummary)) {
+          const label = key.replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
+          if (typeof val === 'object' && val !== null) {
+            console.log(`  ${ANSI.dim}${label}:${ANSI.reset} ${JSON.stringify(val)}`);
+          } else {
+            console.log(`  ${ANSI.dim}${label}:${ANSI.reset} ${val}`);
+          }
+        }
       }
       console.log('');
     }

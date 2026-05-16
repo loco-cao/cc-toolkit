@@ -13,7 +13,17 @@ targets:
     trigger: /{{name}}
     path: codex/SKILL.md
 
-# Optional: custom interactive prompts
+# ── ai-terminal protocol ──────────────────────
+# output_dir:  where the skill writes session data (discovered by ai-terminal)
+# report_pattern: glob for per-agent report files (e.g. "*/report.json")
+# global_timeout: max execution time in seconds
+# agent_timeout:  per-agent timeout in seconds (reserved, not yet enforced by ai-terminal)
+output_dir: .ait-skill
+report_pattern: "*/report.json"
+global_timeout: 600
+agent_timeout: 120
+
+# Optional: custom interactive prompts (example)
 # prompts:
 #   - name: mode
 #     type: select
@@ -23,8 +33,3 @@ targets:
 #         value: "--remote"
 #       - label: Local
 #         value: "--local"
-
-output_dir: .adsense-lint
-report_pattern: "*/report.json"
-global_timeout: 600
-agent_timeout: 120
