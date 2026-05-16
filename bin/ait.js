@@ -94,9 +94,8 @@ program
 
       console.log('');
 
-      const available = [];
-      try { available.push('claude'); } catch (_) {}
-      try { available.push('codex'); } catch (_) {}
+      const { getInstallableAdapters } = require('../lib/adapters/index.js');
+      const available = getInstallableAdapters().map((a) => a.name);
 
       const platforms = await selectPlatforms(available);
       if (platforms.length === 0) {
