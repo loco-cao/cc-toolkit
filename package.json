@@ -1,6 +1,9 @@
 {
-  "name": "@lococao/cc-toolkit",
-  "version": "1.0.1",
+  "name": "@loco-cao/cc-toolkit",
+  "version": "0.0.1",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "CCT — CC Toolkit. Universal CLI launcher for AI coding assistants with skill registry, PTY dashboard, and multi-platform support.",
   "main": "bin/cct.js",
   "bin": {
