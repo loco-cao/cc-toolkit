@@ -8,8 +8,8 @@ const { installSkill, uninstallSkill } = require('../lib/installer.js');
 const { runSkill, openCli } = require('../lib/runner.js');
 
 program
-  .name('ait')
-  .description('AI Terminal — Universal CLI launcher for AI coding assistants')
+  .name('cct')
+  .description('CC Toolkit — Universal CLI launcher for AI coding assistants')
   .version(require('../package.json').version);
 
 // ── register ──
@@ -82,7 +82,7 @@ program
     try {
       const registry = require('../lib/config.js').loadRegistry();
       if (registry.registrations.length === 0) {
-        console.log(colorize('\n  No registered skills. Use "ait register gh:user/repo" first.', ANSI.yellow));
+        console.log(colorize('\n  No registered skills. Use "cct register gh:user/repo" first.', ANSI.yellow));
         console.log('');
         return;
       }
@@ -119,7 +119,7 @@ program
 program
   .command('run <skill> [skillArgs...]')
   .description('Run a skill with PTY dashboard. Extra args are forwarded to the skill.')
-  .option('--cli <name>', 'Force a specific CLI (claude, codex, auto)')
+  .option('--cli <name>', 'Force a specific CLI (claude, auto)')
   .allowUnknownOption()
   .action(async (skillPath, skillArgs, options) => {
     // Normalize skill name
@@ -131,7 +131,7 @@ program
     const reg = findSkill(skillName);
     if (!reg) {
       console.log(colorize(`\n  Skill "${skillName}" not registered.`, ANSI.yellow));
-      console.log(`  Try: ait register gh:user/${skillName}`);
+      console.log(`  Try: cct register gh:user/${skillName}`);
       console.log('');
       return;
     }
@@ -185,7 +185,7 @@ program
 program
   .command('open')
   .description('Open an AI CLI terminal directly')
-  .option('--cli <name>', 'Force a specific CLI (claude, codex, auto)')
+  .option('--cli <name>', 'Force a specific CLI (claude, auto)')
   .action(async (options) => {
     await openCli(options.cli || 'auto');
   });

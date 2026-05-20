@@ -1,30 +1,30 @@
-# AIT Architecture
+# CCT Architecture
 
 ## Overview
 
 ```
-ait <verb> [target] [--flags]
+cct <verb> [target] [--flags]
 
-ait run skills/adsense-lint --local    PTY 启动 → 仪表盘 → 审计
-ait register gh:user/adsense-lint      注册一个 skill 仓库
-ait update                             拉取所有已注册仓库
-ait list [--brief]                     展示已注册的 skill
-ait unregister skills/adsense-lint     移除注册
-ait install                            交互选 skill + 平台 → 安装分发
-ait open [--cli <name>]               直接打开 AI CLI 交互终端
-ait help                              帮助 & 可用命令
+cct run skills/my-skill --local        PTY 启动 → 仪表盘 → 审计
+cct register gh:user/my-skill          注册一个 skill 仓库
+cct update                             拉取所有已注册仓库
+cct list [--brief]                     展示已注册的 skill
+cct unregister skills/my-skill         移除注册
+cct install                            交互选 skill + 平台 → 安装分发
+cct open [--cli <name>]               直接打开 AI CLI 交互终端
+cct help                              帮助 & 可用命令
 ```
 
 ## Layer Architecture
 
 ```
 ┌─────────────────────────────────────────────────┐
-│                  bin/ait.js                       │  CLI Entry (Commander)
+│                  bin/cct.js                       │  CLI Entry (Commander)
 ├──────────┬──────────┬──────────┬────────────────┤
 │ registry │ installer│  runner  │    prompts     │  Core Modules
 ├──────────┴──────────┴──────────┴────────────────┤
 │              lib/adapters/                        │  CLI Abstraction
-│     claude.js     codex.js     (future...)       │
+│     claude.js                                    │
 ├─────────────────────────────────────────────────┤
 │  lib/colors.js  lib/session.js  lib/config.js    │  Utilities
 └─────────────────────────────────────────────────┘
@@ -32,22 +32,22 @@ ait help                              帮助 & 可用命令
 
 ## Module Responsibilities
 
-### bin/ait.js
+### bin/cct.js
 - Parse CLI args with Commander
 - Route to the correct module
 - Print help
 
 ### lib/registry.js
-- Register: `gh:user/repo` → clone to `~/.ait/repos/<name>/`
+- Register: `gh:user/repo` → clone to `~/.cct/repos/<name>/`
 - Update: `git pull` all registered repos
 - List: show all registered skills with metadata
 - Unregister: remove from registry, optionally delete local clone
-- Read `ait.yaml` from each repo, build skill index
-- Store registration in `~/.ait/registry.json`
+- Read `cct.yaml` from each repo, build skill index
+- Store registration in `~/.cct/registry.json`
 
 ### lib/installer.js
 - Show checkbox list of registered skills
-- Show platform selection (Claude Code / Codex)
+- Show platform selection (Claude Code)
 - Copy skill files to platform-specific paths
 - Uses adapters to know target paths
 
@@ -73,7 +73,7 @@ getInstallPaths(): object        // where to copy files
 ```
 
 ### lib/config.js
-- Read/write `~/.ait/config.json`
+- Read/write `~/.cct/config.json`
 - Default CLI preference
 - Registry scope (global / project)
 
@@ -96,27 +96,27 @@ getInstallPaths(): object        // where to copy files
 - Map platform names to OS-specific directory paths
 - Handle Windows / macOS / Linux
 
-## Data Flow: `ait run skills/adsense-lint --local`
+## Data Flow: `cct run skills/my-skill --local`
 
 ```
-User types: ait run skills/adsense-lint --local
+User types: cct run skills/my-skill --local
   │
   ▼
-bin/ait.js: parse args → skill=adsense-lint, mode=--local
+bin/cct.js: parse args → skill=my-skill, mode=--local
   │
   ▼
-registry.js: look up adsense-lint in registry.json
-  │ found → read ait.yaml → get argument-hint, prompts, triggers
+registry.js: look up my-skill in registry.json
+  │ found → read cct.yaml → get argument-hint, prompts, triggers
   │
   ▼
 runner.js:
   ├─ Parse argument-hint → detect --local already given ✓
   ├─ No missing required params → skip prompts
-  ├─ Detect CLI: claude ✓  codex ✗ → auto-select claude
-  ├─ Create session dir: .adsense-lint/session-20260516-HHMMSS/
+  ├─ Detect CLI: claude ✓ → auto-select claude
+  ├─ Create session dir: .my-skill/session-20260516-HHMMSS/
   ├─ adapter.claude.spawn() → PTY
   ├─ Auto-answer trust → "2\r"
-  ├─ Send command → "/adsense-lint --local\r"
+  ├─ Send command → "/my-skill --local\r"
   ├─ Auto-answer permissions → "2\r"
   ├─ Poll session dir for report.json files
   ├─ Render dashboard (colors.js spinner + status)
@@ -124,21 +124,21 @@ runner.js:
   └─ PTY cleanup
 ```
 
-## Data Flow: `ait register gh:user/my-skill`
+## Data Flow: `cct register gh:user/my-skill`
 
 ```
-User types: ait register gh:user/my-skill
+User types: cct register gh:user/my-skill
   │
   ▼
-bin/ait.js: parse args → repo=gh:user/my-skill
+bin/cct.js: parse args → repo=gh:user/my-skill
   │
   ▼
 registry.js:
   ├─ Expand gh:user/repo → https://github.com/user/repo.git
-  ├─ Ask: global (~/.ait/repos/) or project (./.ait/repos/)?
+  ├─ Ask: global (~/.cct/repos/) or project (./.cct/repos/)?
   ├─ git clone to target path
-  ├─ Validate ait.yaml exists in repo root
-  ├─ Read ait.yaml → extract name, version, description
+  ├─ Validate cct.yaml exists in repo root
+  ├─ Read cct.yaml → extract name, version, description
   ├─ Add entry to registry.json
   └─ Print: "Registered: my-skill v1.0.0"
 ```
@@ -149,27 +149,26 @@ See [skill-repo-spec.md](skill-repo-spec.md)
 
 ## Configuration Files
 
-### ~/.ait/config.json (global)
+### ~/.cct/config.json (global)
 ```json
 {
   "default_cli": "auto",
   "cli_paths": {
-    "claude": null,
-    "codex": null
+    "claude": null
   },
   "registry_scope": "global"
 }
 ```
 
-### ~/.ait/registry.json (global registrations)
+### ~/.cct/registry.json (global registrations)
 ```json
 {
   "registrations": [
     {
-      "name": "adsense-lint",
+      "name": "my-skill",
       "version": "0.2.0",
-      "source": "gh:lococao/adsense-lint",
-      "local_path": "~/.ait/repos/adsense-lint",
+      "source": "gh:lococao/my-skill",
+      "local_path": "~/.cct/repos/my-skill",
       "installed_at": "2026-05-16T10:00:00Z",
       "installed_to": ["claude"]
     }
@@ -182,4 +181,3 @@ See [skill-repo-spec.md](skill-repo-spec.md)
 | Platform | Skills Path | Agents Path |
 |----------|------------|-------------|
 | Claude Code | `~/.claude/skills/` | `~/.claude/agents/` |
-| Codex | `~/.codex/skills/` | `~/.codex/agents/` |

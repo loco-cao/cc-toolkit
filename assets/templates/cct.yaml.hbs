@@ -9,16 +9,13 @@ targets:
   claude:
     trigger: /{{name}}
     path: claude/SKILL.md
-  codex:
-    trigger: /{{name}}
-    path: codex/SKILL.md
 
-# ── ai-terminal protocol ──────────────────────
-# output_dir:  where the skill writes session data (discovered by ai-terminal)
+# ── cc-toolkit protocol ──────────────────────
+# output_dir:  where the skill writes session data (discovered by cc-toolkit)
 # report_pattern: glob for per-agent report files (e.g. "*/report.json")
 # global_timeout: max execution time in seconds
-# agent_timeout:  per-agent timeout in seconds (reserved, not yet enforced by ai-terminal)
-output_dir: .ait-skill
+# agent_timeout:  per-agent timeout in seconds (reserved, not yet enforced by cc-toolkit)
+output_dir: .cct-skill
 report_pattern: "*/report.json"
 global_timeout: 600
 agent_timeout: 120

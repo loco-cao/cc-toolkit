@@ -1,8 +1,8 @@
 node_modules/
 
-.adsense-lint/
-.ait/repos/
-.ait/registry.json
+.my-skill/
+.cct/repos/
+.cct/registry.json
 
 *.log
 .env

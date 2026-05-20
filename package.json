@@ -1,10 +1,10 @@
 {
-  "name": "@lococao/ai-terminal",
+  "name": "@lococao/cc-toolkit",
   "version": "1.0.1",
-  "description": "AIT — AI Terminal. Universal CLI launcher for AI coding assistants with skill registry, PTY dashboard, and multi-platform support.",
-  "main": "bin/ait.js",
+  "description": "CCT — CC Toolkit. Universal CLI launcher for AI coding assistants with skill registry, PTY dashboard, and multi-platform support.",
+  "main": "bin/cct.js",
   "bin": {
-    "ait": "./bin/ait.js"
+    "cct": "./bin/cct.js"
   },
   "files": [
     "bin/",
@@ -14,14 +14,13 @@
     "README.md"
   ],
   "scripts": {
-    "start": "node bin/ait.js",
-    "prepublishOnly": "node -e \"console.log('Publishing @lococao/ai-terminal@' + require('./package.json').version)\""
+    "start": "node bin/cct.js",
+    "prepublishOnly": "node -e \"console.log('Publishing @lococao/cc-toolkit@' + require('./package.json').version)\""
   },
   "keywords": [
     "ai",
     "terminal",
     "claude-code",
-    "codex",
     "skill",
     "cli",
     "pty"
@@ -33,12 +32,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lococao/ai-terminal.git"
+    "url": "git+https://github.com/lococao/cc-toolkit.git"
   },
   "bugs": {
-    "url": "https://github.com/lococao/ai-terminal/issues"
+    "url": "https://github.com/lococao/cc-toolkit/issues"
   },
-  "homepage": "https://github.com/lococao/ai-terminal#readme",
+  "homepage": "https://github.com/lococao/cc-toolkit#readme",
   "dependencies": {
     "commander": "^11.0.0",
     "@inquirer/prompts": "^4.0.0",
